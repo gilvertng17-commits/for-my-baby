@@ -1,431 +1,508 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta property="og:title" content="A Special Surprise For You 💖" />
-    <meta property="og:description" content="Click to open your invitation box... ✨" />
-    <meta property="og:type" content="website" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>For You Baby</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
 
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FOR MY BABY GIRL</title>
-    <style>
-        /* --- GLOBAL & BACKGROUND --- */
-        html, body {
-            margin: 0;
-            padding: 0;
-            min-height: 100vh;
-            width: 100%;
-            background: linear-gradient(to bottom right, #ffb6c1, #ffe4e1);
-            font-family: 'Georgia', serif;
-            text-align: center;
-            position: relative;
-            overflow-x: hidden;
-        }
+    body {
+      background: linear-gradient(135deg, #ffe6e8 0%, #d4d0f5 100%);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+      position: relative;
+    }
 
-        /* --- STAGE MANAGEMENT --- */
-        .stage {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            width: 100%;
-            padding: 20px;
-            box-sizing: border-box;
-            position: absolute;
-            top: 0;
-            left: 0;
-            transition: opacity 0.6s ease, transform 0.6s ease;
-            z-index: 20;
-        }
+    /* Fixed Petal Canvas Z-Index & Interactivity */
+    #petalCanvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 9999;
+      display: block;
+    }
 
-        .hidden {
-            opacity: 0;
-            pointer-events: none;
-            transform: scale(0.95);
-            position: absolute;
-            height: 0;
-            overflow: hidden;
-        }
+    .container {
+      background: rgba(255, 255, 255, 0.95);
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      text-align: center;
+      max-width: 500px;
+      width: 90%;
+      position: relative;
+      z-index: 10;
+      max-height: 90vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
 
-        /* --- BUBBLY ROMANTIC CARDS --- */
-        .quiz-card {
-            background-color: rgba(255, 255, 255, 0.96);
-            padding: 45px 35px;
-            border-radius: 40px; 
-            box-shadow: 0px 15px 40px rgba(255, 105, 180, 0.2);
-            max-width: 440px;
-            width: 90%;
-            box-sizing: border-box;
-            border: 3px solid rgba(255, 182, 193, 0.6);
-            animation: bubblePop 0.5s ease-out;
-        }
+    h2 {
+      color: #ff4b72;
+      margin-bottom: 20px;
+      font-size: 24px;
+    }
 
-        @keyframes bubblePop {
-            0% { transform: scale(0.8); opacity: 0; }
-            70% { transform: scale(1.05); }
-            100% { transform: scale(1); opacity: 1; }
-        }
+    .stage {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+    }
 
-        .quiz-card h2 {
-            color: #d11d70;
-            margin-top: 0;
-            font-size: 28px;
-            line-height: 1.4;
-            font-family: 'Comic Sans MS', 'Georgia', serif; 
-        }
+    .stage.active {
+      display: flex;
+    }
 
-        .quiz-card input {
-            width: 100%;
-            padding: 16px;
-            font-size: 18px;
-            border: 3px solid #ffb6c1;
-            border-radius: 25px; 
-            margin: 25px 0;
-            text-align: center;
-            outline: none;
-            box-sizing: border-box;
-            transition: all 0.3s ease;
-            box-shadow: inset 0 2px 5px rgba(0,0,0,0.03);
-        }
+    /* Stage 1: Block Puzzle */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(4, 50px);
+      grid-template-rows: repeat(4, 50px);
+      gap: 5px;
+      background-color: #333;
+      padding: 8px;
+      border-radius: 10px;
+      margin-bottom: 15px;
+    }
 
-        .quiz-card input:focus {
-            border-color: hotpink;
-            box-shadow: 0 0 10px rgba(255, 105, 180, 0.4);
-        }
+    .cell {
+      width: 50px;
+      height: 50px;
+      background-color: #555;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
 
-        /* --- BUBBLY BUTTON DESIGNS --- */
-        .btn {
-            background: linear-gradient(135deg, #ff69b4, #ff1493);
-            color: white;
-            border: none;
-            padding: 15px 40px;
-            font-size: 18px;
-            font-weight: bold;
-            border-radius: 35px; 
-            cursor: pointer;
-            box-shadow: 0 6px 20px rgba(255, 20, 147, 0.4);
-            display: inline-block;
-        }
+    .cell.filled {
+      background-color: #ff4b72;
+    }
 
-        .btn-container {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 20px;
-            margin-top: 30px;
-            position: relative;
-            min-height: 120px; /* Added extra clearance space for growing Yes button */
-        }
+    .instruction {
+      font-size: 14px;
+      color: #666;
+      margin-bottom: 15px;
+    }
 
-        #btn-yes {
-            z-index: 30;
-            transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
+    /* Buttons */
+    .btn-group {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      width: 100%;
+    }
 
-        #btn-yes:hover {
-            transform: scale(1.08);
-        }
+    .btn {
+      background-color: #ff758c;
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      font-size: 16px;
+      border-radius: 25px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-weight: bold;
+    }
 
-        #btn-no {
-            background: #b0b0b0;
-            box-shadow: none;
-            z-index: 25;
-            transition: transform 0.15s ease, left 0.15s ease, top 0.15s ease;
-        }
+    .btn:hover {
+      background-color: #ff4b72;
+      transform: translateY(-2px);
+    }
 
-        /* --- STAGE 3: REAL UNWRAPPING & UNFOLDING SYSTEM --- */
-        .letter-box {
-            position: relative;
-            width: 280px;
-            height: 180px;
-            margin-top: 30px;
-            perspective: 1500px;
-            cursor: pointer;
-        }
+    /* Stage 4: Interactive Yes/No */
+    .love-buttons {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 20px;
+      margin-top: 20px;
+      position: relative;
+      min-height: 150px;
+      width: 100%;
+    }
 
-        .paper-base {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            background: #ffffff;
-            box-shadow: 0px 10px 30px rgba(0,0,0,0.15);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 40px;
-            z-index: 2;
-            transition: transform 0.5s ease;
-        }
+    #yesBtn {
+      z-index: 5;
+      transition: all 0.3s ease;
+    }
 
-        .paper-fold-top {
-            position: absolute;
-            top: -100%;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: #fdfdfd;
-            border-bottom: 2px dashed #ffb6c1;
-            transform-origin: bottom center;
-            transform: rotateX(-175deg); 
-            transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-            z-index: 3;
-            box-shadow: inset 0 -10px 20px rgba(0,0,0,0.02);
-        }
+    #noBtn {
+      transition: all 0.3s ease;
+      background-color: #a0a0a0;
+    }
 
-        .paper-fold-bottom {
-            position: absolute;
-            bottom: -100%;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: #fdfdfd;
-            border-top: 2px dashed #ffb6c1;
-            transform-origin: top center;
-            transform: rotateX(175deg); 
-            transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-            z-index: 3;
-            box-shadow: inset 0 10px 20px rgba(0,0,0,0.02);
-        }
+    /* Envelope & Unfolding Letter Stage */
+    .envelope-icon {
+      font-size: 80px;
+      cursor: pointer;
+      animation: bounce 1.5s infinite;
+      user-select: none;
+      margin-top: 10px;
+    }
 
-        .letter-box.unfold .paper-fold-top {
-            transform: rotateX(0deg); 
-        }
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-15px); }
+    }
 
-        .letter-box.unfold .paper-fold-bottom {
-            transform: rotateX(0deg); 
-        }
+    .letter-container {
+      perspective: 1000px;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-top: 10px;
+      max-height: 60vh;
+    }
 
-        /* --- STAGE 4: MAIN LETTER SCREEN --- */
-        #main-content {
-            opacity: 0;
-            transition: opacity 1.5s ease;
-            width: 100%;
-        }
+    .letter {
+      background: #fffdf9;
+      border: 2px dashed #ffb7c5;
+      border-radius: 12px;
+      padding: 20px;
+      width: 100%;
+      min-height: 120px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+      cursor: pointer;
+      transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+      transform-origin: top center;
+      overflow-y: auto;
+      max-height: 55vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
 
-        #main-content.visible {
-            opacity: 1;
-        }
+    /* Unfolding Steps */
+    .fold-0 {
+      transform: scaleY(0.2) scaleX(0.5);
+      background-color: #ffeef2;
+    }
+    .fold-1 {
+      transform: scaleY(0.4) scaleX(0.7);
+      background-color: #fff5f7;
+    }
+    .fold-2 {
+      transform: scaleY(0.7) scaleX(0.9);
+      background-color: #fff9fa;
+    }
+    .fold-3 {
+      transform: scaleY(1) scaleX(1);
+    }
 
-        header {
-            background-color: hotpink;
-            color: white;
-            padding: 25px 15px;
-            box-shadow: 0px 4px 10px rgba(0,0,0,0.3);
-            position: relative;
-            z-index: 10;
-        }
+    .letter-content {
+      display: none;
+      text-align: left;
+      font-size: 15px;
+      line-height: 1.6;
+      color: #444;
+      white-space: pre-line;
+      width: 100%;
+    }
 
-        h1 {
-            font-size: clamp(32px, 8vw, 50px); 
-            margin: 0;
-            text-shadow: 2px 2px 12px deeppink;
-            letter-spacing: 2px;
-        }
-
-        p {
-            font-size: clamp(16px, 4vw, 20px); 
-            line-height: 1.8;
-            max-width: 800px;
-            margin: 40px auto;
-            background-color: rgba(255,255,255,0.92);
-            padding: 35px;
-            border-radius: 28px;
-            box-shadow: 0px 8px 20px rgba(0,0,0,0.1);
-            color: #333;
-            position: relative;
-            z-index: 10;
-            width: 85%;
-            box-sizing: border-box;
-            border: 2px solid rgba(255, 182, 193, 0.4);
-        }
-
-        hr {
-            border: none;
-            height: 4px;
-            background-color: deeppink;
-            margin: 0;
-        }
-
-        .flower {
-            position: fixed; 
-            font-size: 80px; 
-            line-height: 1;
-            bottom: 20px;   
-            z-index: 5;
-            animation: sway 5s infinite ease-in-out;
-            pointer-events: none;
-            user-select: none;
-        }
-
-        .rose-anchor { left: 5%; }
-        .tulip-anchor { right: 5%; }
-
-        @keyframes sway {
-            0% { transform: rotate(0deg) translateY(0px); }
-            50% { transform: rotate(8deg) translateY(-10px); }
-            100% { transform: rotate(0deg) translateY(0px); }
-        }
-
-        /* --- CHERRY BLOSSOM STORM BLANKET --- */
-        .blossom-rain {
-            position: fixed;
-            top: -50px;
-            z-index: 2;
-            pointer-events: none;
-            user-select: none;
-            opacity: 0;
-            animation: sakuraFall 9s infinite linear;
-        }
-
-        @keyframes sakuraFall {
-            0% {
-                top: -50px;
-                transform: translateX(0) rotate(0deg) scale(0.6);
-                opacity: 0;
-            }
-            15% { opacity: 0.85; }
-            90% { opacity: 0.85; }
-            100% {
-                top: 105vh;
-                transform: translateX(140px) rotate(420deg) scale(1.1);
-                opacity: 0;
-            }
-        }
-    </style>
+    .click-hint {
+      font-size: 13px;
+      color: #ff4b72;
+      font-weight: bold;
+      margin-top: 10px;
+    }
+  </style>
 </head>
-
 <body>
 
-    <!-- STAGE 1: ANNIVERSARY VERIFICATION -->
-    <div id="stage-1" class="stage">
-        <div class="quiz-card">
-            <h2>When is our anniversary? 💖</h2>
-            <input type="text" id="anniversary-input" placeholder="Clue: May..." autocomplete="off">
-            <button class="btn" onclick="verifyAnniversary()">Next ✨</button>
-        </div>
+  <canvas id="petalCanvas"></canvas>
+
+  <div class="container">
+    <!-- STAGE 1: BLOCK BLAST PUZZLE -->
+    <div id="stage1" class="stage active">
+      <h2>Stage 1: Fill the Grid! 🧩</h2>
+      <p class="instruction">Click the empty grey blocks to fill the line and solve the puzzle!</p>
+      <div class="grid" id="grid"></div>
     </div>
 
-    <!-- STAGE 2: THE LOVE TRAP -->
-    <div id="stage-2" class="stage hidden">
-        <div class="quiz-card">
-            <h2>Do you love me? 🥺</h2>
-            <div class="btn-container">
-                <button id="btn-yes" class="btn" onclick="goToStage(2, 3)">YES! 💝</button>
-                <button id="btn-no" class="btn" onmouseover="evadeAndShrink()" onclick="evadeAndShrink()">No</button>
-            </div>
-        </div>
+    <!-- STAGE 2: ANNIVERSARY -->
+    <div id="stage2" class="stage">
+      <h2>When is our Anniversary? 💕</h2>
+      <div class="btn-group">
+        <button class="btn" onclick="checkAnniversary(false)">April 14</button>
+        <button class="btn" onclick="checkAnniversary(true)">May 23</button>
+        <button class="btn" onclick="checkAnniversary(false)">June 12</button>
+      </div>
     </div>
 
-    <!-- STAGE 3: INTERACTIVE 3D UNFOLDING LETTER PANEL -->
-    <div id="stage-3" class="stage hidden">
-        <h2 style="color: deeppink; text-shadow: 1px 1px 4px white; margin-bottom: 30px; font-family: 'Comic Sans MS', sans-serif;">You have a love letter! Tap to unfold ✉️</h2>
+    <!-- STAGE 3: BIRTHDAY -->
+    <div id="stage3" class="stage">
+      <h2>When is my Birthday? 🎂</h2>
+      <div class="btn-group">
+        <button class="btn" onclick="checkBirthday(false)">May 20</button>
+        <button class="btn" onclick="checkBirthday(false)">June 15</button>
+        <button class="btn" onclick="checkBirthday(true)">June 20</button>
+      </div>
+    </div>
+
+    <!-- STAGE 4: DO YOU LOVE ME? -->
+    <div id="stage4" class="stage">
+      <h2 id="finalTitle">Do you love me so much? 🥺❤️</h2>
+      <div class="love-buttons">
+        <button id="yesBtn" class="btn" onclick="celebrateLove()">YES!</button>
+        <button id="noBtn" class="btn" onclick="shrinkNo()">No</button>
+      </div>
+    </div>
+
+    <!-- STAGE 5: ENVELOPE POP-UP -->
+    <div id="stageEnvelope" class="stage">
+      <h2>You completed all tasks! 🎉</h2>
+      <p class="instruction">You have a special letter waiting...</p>
+      <div class="envelope-icon" onclick="openEnvelope()">✉️</div>
+      <p class="click-hint">Click the envelope to open!</p>
+    </div>
+
+    <!-- STAGE 6: UNFOLDING LETTER -->
+    <div id="stageLetter" class="stage">
+      <h2>A Letter For You Baby 💌</h2>
+      <div class="letter-container">
+        <div id="letterCard" class="letter fold-0" onclick="unfoldLetter()">
+          <p id="foldHint" class="click-hint" style="text-align: center;">Click to unfold (1/4) 📄</p>
+          
+          <div id="letterContent" class="letter-content">
+For My Baby Cutiee Erica
+
+I LOVEEE YOUU SOO MUCHHH BABYYY, Im so lucky that I met you in my life. Im so sorry also
+for all of the mistakes Ive done, This journey wont be easy for us because after all of 
+we are also LDR that hurts a lot because I cant be there and comfort you. But soon I will
+be always on your side. I know that "Im sorry" is not enough to remove the heaviness and
+pain you're experiencing, I know that this will take months to get your sweet "YES" and
+get that trust once more, I know it wont be the same as before..
+
+To be honest, on the past I know that you can see me like I can go a day without you, but
+the truth is I cant.. why? because you're my life, you're my fuel in my life. I cant live
+without you baby.
+
+I lied, I hid my mistake, and act like you're the one thats wrong. Im sorry baby, I lost
+my path and I hurted you a lot, you suffered because of me so I completely understand why
+you acting like this right now. Im such a dumb person, Im so blind.. I didnt realize
+everything and when I realized its too late already. Im sorry for being the worst boyfriend.
+I promised I will love you and only you but I did that thing, I broke my promises. On the past
+I keep saying things to you like you're just an add up to my stress, I even making my voice
+louder, focusing on code and just gave you like an hour.. Im sorry baby, Im so sorry baby ko
+I cant forgive myself after all of the things I did to you. You will see baby that I will 
+change and be a better man for both of us. I dont want to entertain a new girl, I dont care
+if theyre near because I know that I can go there on your side, I also dont want there boobs, 
+pussy, I just want your baby I wont be tempted again baby..
+
+I just want you my baby Erica because I cant imagine a life without you, I cant be the Gilvert
+if you're not there. I want you... Only you baby. I wanna make a happy family with you, travel
+the world with you, have fun with you. If you're tired then rest on my shoulder, if you're much
+tire then rest to my chest, if much much tired then rest to my heart. The things I did on the
+wont happen again this time, I wont blame you on anything anymore. You wont fight alone anymore.
+Im your ally baby.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /* --- STAGE MANAGEMENT & PETAL EXPLOSION --- */
+    function goToStage(stageId) {
+      document.querySelectorAll('.stage').forEach(s => s.classList.remove('active'));
+      document.getElementById(stageId).classList.add('active');
+      triggerPetalExplosion();
+    }
+
+    /* --- MOBILE-COMPATIBLE CHERRY BLOSSOM ANIMATION --- */
+    const canvas = document.getElementById('petalCanvas');
+    const ctx = canvas.getContext('2d');
+    let particles = [];
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
+      canvas.height = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
+    }
+    window.addEventListener('resize', resizeCanvas);
+    window.addEventListener('load', resizeCanvas);
+    resizeCanvas();
+
+    class Petal {
+      constructor(x, y) {
+        this.x = x;
+        this.y = y;
+        this.size = Math.random() * 8 + 8;
+        const angle = Math.random() * Math.PI * 2;
+        const speed = Math.random() * 10 + 4;
+        this.vx = Math.cos(angle) * speed;
+        this.vy = Math.sin(angle) * speed;
+        this.opacity = 1;
+        this.color = '#ffb7c5';
+        this.rotation = Math.random() * 360;
+        this.rotationSpeed = (Math.random() - 0.5) * 5;
+      }
+
+      update() {
+        this.x += this.vx;
+        this.y += this.vy;
+        this.vy += 0.12;
+        this.vx *= 0.96;
+        this.opacity -= 0.015;
+        this.rotation += this.rotationSpeed;
+      }
+
+      draw() {
+        ctx.save();
+        ctx.translate(this.x, this.y);
+        ctx.rotate((this.rotation * Math.PI) / 180);
+        ctx.globalAlpha = Math.max(0, this.opacity);
+        ctx.fillStyle = this.color;
         
-        <div class="letter-box" onclick="triggerLetterUnfolding(this)">
-            <div class="paper-base">
-                ❤️
-                <div class="paper-fold-top"></div>
-                <div class="paper-fold-bottom"></div>
-            </div>
-        </div>
-    </div>
+        ctx.beginPath();
+        ctx.moveTo(0, 0);
+        ctx.bezierCurveTo(-this.size/2, -this.size, -this.size, this.size/3, 0, this.size);
+        ctx.bezierCurveTo(this.size, this.size/3, this.size/2, -this.size, 0, 0);
+        ctx.fill();
+        ctx.restore();
+      }
+    }
 
-    <!-- STAGE 4: MAIN REVEAL CONTENT -->
-    <div id="main-content" class="hidden">
-        <header>
-            <h1><b>HELLO MY BABY!!</b></h1>
-        </header>
-        <hr>
+    function triggerPetalExplosion() {
+      resizeCanvas();
+      const centerX = canvas.width / 2;
+      const centerY = canvas.height / 2;
+      for (let i = 0; i < 70; i++) {
+        particles.push(new Petal(centerX, centerY));
+      }
+    }
+
+    function animatePetals() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      for (let i = particles.length - 1; i >= 0; i--) {
+        const p = particles[i];
+        p.update();
+        p.draw();
+        if (p.opacity <= 0) {
+          particles.splice(i, 1);
+        }
+      }
+      requestAnimationFrame(animatePetals);
+    }
+    animatePetals();
+
+    /* --- STAGE 1 LOGIC (Grid Block Blast) --- */
+    const gridEl = document.getElementById('grid');
+    const gridState = [
+      1,1,1,1,
+      1,1,1,1,
+      1,1,1,1,
+      1,0,0,0
+    ];
+
+    function renderGrid() {
+      gridEl.innerHTML = '';
+      gridState.forEach((state, index) => {
+        const cell = document.createElement('div');
+        cell.classList.add('cell');
+        if (state === 1) cell.classList.add('filled');
+        cell.addEventListener('click', () => fillCell(index));
+        gridEl.appendChild(cell);
+      });
+    }
+
+    function fillCell(index) {
+      if (gridState[index] === 0) {
+        gridState[index] = 1;
+        renderGrid();
+        checkGridComplete();
+      }
+    }
+
+    function checkGridComplete() {
+      if (gridState.every(val => val === 1)) {
+        setTimeout(() => {
+          goToStage('stage2');
+        }, 300);
+      }
+    }
+    renderGrid();
+
+    /* --- STAGE 2 LOGIC --- */
+    function checkAnniversary(isCorrect) {
+      if (isCorrect) {
+        goToStage('stage3');
+      } else {
+        alert('Wrong answer! Try again 💕');
+      }
+    }
+
+    /* --- STAGE 3 LOGIC --- */
+    function checkBirthday(isCorrect) {
+      if (isCorrect) {
+        goToStage('stage4');
+      } else {
+        alert('Wrong answer! Try again 🎂');
+      }
+    }
+
+    /* --- STAGE 4 LOGIC (Growing Yes / Shrinking No) --- */
+    let yesScale = 1;
+    let noScale = 1;
+
+    function shrinkNo() {
+      yesScale += 0.45;
+      noScale -= 0.2;
+
+      const yesBtn = document.getElementById('yesBtn');
+      const noBtn = document.getElementById('noBtn');
+
+      yesBtn.style.transform = `scale(${yesScale})`;
+      
+      if (noScale <= 0.1) {
+        noBtn.style.display = 'none';
+      } else {
+        noBtn.style.transform = `scale(${noScale})`;
+      }
+    }
+
+    function celebrateLove() {
+      goToStage('stageEnvelope');
+    }
+
+    /* --- ENVELOPE & 4-STEP UNFOLDING LETTER LOGIC --- */
+    function openEnvelope() {
+      goToStage('stageLetter');
+    }
+
+    let foldStep = 0;
+    function unfoldLetter() {
+      if (foldStep < 4) {
+        foldStep++;
+        const letterCard = document.getElementById('letterCard');
+        const foldHint = document.getElementById('foldHint');
         
-        <p>
-            I appreciate you BABYY KOO!! hehe.
-            I'm such a lucky guy because I have you Asawa ko, I'm so lucky because you love 
-            me so much!! I'm so thankful to God after you came to my life. I know in the 
-            past I was such a dumbass boyfriend for you, I regret it.. This time it will be
-            different, I will change and prove it to you that I am the man you deserve. Baby
-            THANK YOU SO MUCH for always UNDERSTANDING me, for always LOVING me, for STAYING
-            always on my side. I'm so lucky to have you my baby, I don't wanna lose you.. I 
-            can't baby.. I can't live without you baby.. I just want you, only you my baby, that's
-            all I want... You will see Asawa ko, I will prove it that I should be your Husband.
-            I will prove it baby... I know Asawa ko that heaviness in your heart won’t just fade 
-            away that easily; then I will remove that heaviness you feel even if I need to assure 
-            you a BILLION TIMES, EVERYDAY, EVERYNIGHT, ALWAYS.. I will remove those fears, those pains. 
-            I love you baby ko and I will prove it to you baby.
-        </p>
-
-        <div class="flower rose-anchor">🌹</div>
-        <div class="flower tulip-anchor">🌷</div>
-
-        <div class="blossom-rain" style="left: 3%; font-size: 24px; animation-delay: 0s; animation-duration: 7s;">🌸</div>
-        <div class="blossom-rain" style="left: 8%; font-size: 32px; animation-delay: 3.5s; animation-duration: 9.5s;">🌸</div>
-        <div class="blossom-rain" style="left: 14%; font-size: 20px; animation-delay: 1.2s; animation-duration: 11s;">🌸</div>
-        <div class="blossom-rain" style="left: 20%; font-size: 28px; animation-delay: 5.8s; animation-duration: 8s;">🌸</div>
-        <div class="blossom-rain" style="left: 26%; font-size: 35px; animation-delay: 0.5s; animation-duration: 6.5s;">🌸</div>
-        <div class="blossom-rain" style="left: 32%; font-size: 22px; animation-delay: 4.2s; animation-duration: 10s;">🌸</div>
-        <div class="blossom-rain" style="left: 38%; font-size: 30px; animation-delay: 2.1s; animation-duration: 8.5s;">🌸</div>
-        <div class="blossom-rain" style="left: 44%; font-size: 25px; animation-delay: 6.3s; animation-duration: 11.5s;">🌸</div>
-        <div class="blossom-rain" style="left: 50%; font-size: 33px; animation-delay: 1.5s; animation-duration: 7.5s;">🌸</div>
-        <div class="blossom-rain" style="left: 55%; font-size: 21px; animation-delay: 4.9s; animation-duration: 9s;">🌸</div>
-        <div class="blossom-rain" style="left: 61%; font-size: 29px; animation-delay: 0.3s; animation-duration: 10.5s;">🌸</div>
-        <div class="blossom-rain" style="left: 66%; font-size: 36px; animation-delay: 3.1s; animation-duration: 6s;">🌸</div>
-        <div class="blossom-rain" style="left: 72%; font-size: 23px; animation-delay: 7.2s; animation-duration: 12s;">🌸</div>
-        <div class="blossom-rain" style="left: 77%; font-size: 31px; animation-delay: 1.9s; animation-duration: 8.8s;">🌸</div>
-        <div class="blossom-rain" style="left: 83%; font-size: 26px; animation-delay: 5.1s; animation-duration: 10.2s;">🌸</div>
-        <div class="blossom-rain" style="left: 88%; font-size: 34px; animation-delay: 2.6s; animation-duration: 7.2s;">🌸</div>
-        <div class="blossom-rain" style="left: 92%; font-size: 22px; animation-delay: 6.0s; animation-duration: 9.8s;">🌸</div>
-        <div class="blossom-rain" style="left: 96%; font-size: 28px; animation-delay: 0.8s; animation-duration: 11.2s;">🌸</div>
-    </div>
-
-    <script>
-        function verifyAnniversary() {
-            const rawVal = document.getElementById('anniversary-input').value.trim().toLowerCase().replace(/,/g, '');
-            const acceptedDates = ["may 23 2025", "05/23/2025", "5/23/2025", "05-23-2025", "5-23-2025"];
-            
-            if (acceptedDates.includes(rawVal)) {
-                goToStage(1, 2);
-            } else {
-                alert("Wrong date, think again my baby! 🥺");
-            }
+        if (foldStep < 4) {
+          letterCard.className = `letter fold-${foldStep}`;
+          foldHint.innerText = `Click to unfold (${foldStep + 1}/4) 📄`;
+        } else {
+          // Final 4th click fully unfolds & reveals message
+          letterCard.className = `letter fold-3`;
+          foldHint.style.display = 'none';
+          document.getElementById('letterContent').style.display = 'block';
+          triggerPetalExplosion();
         }
-
-        function goToStage(from, to) {
-            document.getElementById(`stage-${from}`).classList.add('hidden');
-            document.getElementById(`stage-${to}`).classList.remove('hidden');
-        }
-
-        // Shared growing and shrinking metrics engine
-        let scaleNo = 1.0;
-        let scaleYes = 1.0;
-
-        function evadeAndShrink() {
-            const noBtn = document.getElementById('btn-no');
-            const yesBtn = document.getElementById('btn-yes');
-            
-            scaleNo -= 0.12;
-            scaleYes += 0.22; // Grows perfectly on every evade trigger loop now
-            if (scaleNo < 0.25) scaleNo = 0.25;
-            
-            noBtn.style.transform = `scale(${scaleNo})`;
-            yesBtn.style.transform = `scale(${scaleYes})`;
-            
-            const moveX = Math.floor(Math.random() * 80) - 40;
-            const moveY = Math.floor(Math.random() * 40) - 20;
-            noBtn.style.position = "relative";
-            noBtn.style.left = moveX + "px";
-            noBtn.style.top = moveY + "px";
-        }
-
-        function triggerLetterUnfolding(element) {
-            element.classList.add('unfold');
-            setTimeout(() => {
-                document.getElementById('stage-3').classList.add('hidden');
-                const letterBox = document.getElementById('main-content');
-                letterBox.classList.remove('hidden');
-                setTimeout(() => {
-                    letterBox.classList.add('visible');
-                }, 50);
-            }, 1000);
-        }
-    </script>
+      }
+    }
+  </script>
 </body>
 </html>
