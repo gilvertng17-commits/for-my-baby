@@ -324,10 +324,11 @@ Im your ally baby.
       triggerPetalExplosion();
     }
 
-    /* --- MOBILE-COMPATIBLE CHERRY BLOSSOM ANIMATION --- */
+    /* --- CHERRY BLOSSOM RAIN & EXPLOSION ENGINE --- */
     const canvas = document.getElementById('petalCanvas');
     const ctx = canvas.getContext('2d');
     let particles = [];
+    let rainPetals = [];
 
     function resizeCanvas() {
       canvas.width = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
@@ -338,27 +339,46 @@ Im your ally baby.
     resizeCanvas();
 
     class Petal {
-      constructor(x, y) {
+      constructor(x, y, isRain = false) {
+        this.isRain = isRain;
         this.x = x;
         this.y = y;
-        this.size = Math.random() * 8 + 8;
-        const angle = Math.random() * Math.PI * 2;
-        const speed = Math.random() * 10 + 4;
-        this.vx = Math.cos(angle) * speed;
-        this.vy = Math.sin(angle) * speed;
-        this.opacity = 1;
-        this.color = '#ffb7c5';
+        this.size = Math.random() * 7 + 7;
+        
+        if (isRain) {
+          this.vx = Math.random() * 2 - 1; // Gentle sway side to side
+          this.vy = Math.random() * 1.5 + 1; // Gentle falling downwards
+          this.opacity = Math.random() * 0.7 + 0.3;
+        } else {
+          const angle = Math.random() * Math.PI * 2;
+          const speed = Math.random() * 10 + 4;
+          this.vx = Math.cos(angle) * speed;
+          this.vy = Math.sin(angle) * speed;
+          this.opacity = 1;
+        }
+        
+        this.color = Math.random() > 0.3 ? '#ffb7c5' : '#ff9ebb'; // Two soft pink tones
         this.rotation = Math.random() * 360;
-        this.rotationSpeed = (Math.random() - 0.5) * 5;
+        this.rotationSpeed = (Math.random() - 0.5) * 3;
       }
 
       update() {
         this.x += this.vx;
         this.y += this.vy;
-        this.vy += 0.12;
-        this.vx *= 0.96;
-        this.opacity -= 0.015;
         this.rotation += this.rotationSpeed;
+
+        if (this.isRain) {
+          this.vx += Math.sin(this.y * 0.01) * 0.03; // Gentle wind effect
+          // Reset when fallen off the screen
+          if (this.y > canvas.height + 20) {
+            this.y = -20;
+            this.x = Math.random() * canvas.width;
+          }
+        } else {
+          this.vy += 0.12; // Gravity for burst
+          this.vx *= 0.96; // Friction
+          this.opacity -= 0.015;
+        }
       }
 
       draw() {
@@ -377,17 +397,30 @@ Im your ally baby.
       }
     }
 
+    // Initialize continuous raining petals (35 active rain petals)
+    for (let i = 0; i < 35; i++) {
+      rainPetals.push(new Petal(Math.random() * window.innerWidth, Math.random() * window.innerHeight, true));
+    }
+
     function triggerPetalExplosion() {
       resizeCanvas();
       const centerX = canvas.width / 2;
       const centerY = canvas.height / 2;
       for (let i = 0; i < 70; i++) {
-        particles.push(new Petal(centerX, centerY));
+        particles.push(new Petal(centerX, centerY, false));
       }
     }
 
     function animatePetals() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
+      
+      // Render continuous rain
+      rainPetals.forEach(p => {
+        p.update();
+        p.draw();
+      });
+
+      // Render explosion bursts
       for (let i = particles.length - 1; i >= 0; i--) {
         const p = particles[i];
         p.update();
